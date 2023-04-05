@@ -5,14 +5,19 @@ function TableLayout() {
 
   const [page, setPage] = useState(1);
 
+  const [total, setTotal] = useState(null);
+  const [skip, setSkip] = useState(0);
   const [search, setSearch] = useState("");
 
   const [filterParam, setFilterParam] = useState([]);
   useEffect(() => {
-    fetch("https://dummyjson.com/products?limit=100")
+    fetch(`https://dummyjson.com/products/search?q=&limit=10&skip=${skip}`)
       .then((data) => data.json())
       .then((res) => setProductList(res.products));
-  }, []);
+    fetch(`https://dummyjson.com/products/search?q=&limit=10`)
+      .then((data) => data.json())
+      .then((res) => setTotal(res.total));
+  }, [skip]);
 
   const filteredList = productList.filter((data) => {
     if (filterParam === "title") {
@@ -32,6 +37,27 @@ function TableLayout() {
 
   const handlePage = (selectedPage) => {
     setPage(selectedPage);
+    if (selectedPage === 1) {
+      setSkip(10);
+    } else if (selectedPage === 2) {
+      setSkip(20);
+    } else if (selectedPage === 3) {
+      setSkip(30);
+    } else if (selectedPage === 4) {
+      setSkip(40);
+    } else if (selectedPage === 5) {
+      setSkip(50);
+    } else if (selectedPage === 6) {
+      setSkip(60);
+    } else if (selectedPage === 7) {
+      setSkip(70);
+    } else if (selectedPage === 8) {
+      setSkip(80);
+    } else if (selectedPage === 9) {
+      setSkip(90);
+    } else if (selectedPage === 10) {
+      setSkip(100);
+    }
   };
   const styleData = {
     color: "black",
@@ -44,14 +70,20 @@ function TableLayout() {
     cursor: "pointer",
   };
 
-  console.log("@SN ", search);
+  console.log("@SN skip", skip);
+  console.log("@SN productList", productList);
   return (
     <div>
       <div
         style={{ display: "flex", padding: "10px", justifyContent: "center" }}
       >
-        <div className="input-group-prepend">
-          <select name="" id="" onClick={(e) => setFilterParam(e.target.value)}>
+        <div>
+          <select
+            name=""
+            id=""
+            onClick={(e) => setFilterParam(e.target.value)}
+            style={{ minHeight: "-webkit-fill-available" }}
+          >
             <option value="title">Title</option>
             <option value="brand">Brand</option>
             <option value="price">Price</option>
@@ -68,7 +100,7 @@ function TableLayout() {
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
-      <table className="table table-sm">
+      <table className="table">
         <thead>
           <tr>
             <th scope="col">Sr.No</th>
@@ -81,9 +113,9 @@ function TableLayout() {
           </tr>
         </thead>
         <tbody>
-          {filteredList.slice(page * 10 - 10, page * 10).map((item) => {
+          {filteredList.map((item, index) => {
             return (
-              <tr>
+              <tr key={index}>
                 <th scope="row">{item.id}</th>
                 <td>{item.title}</td>
                 <td>{item.brand}</td>
@@ -100,14 +132,16 @@ function TableLayout() {
           <a style={styleData} href="">
             &laquo;
           </a>
-          {[...Array(productList.length / 10)].map((_, i) => {
+          {[...Array(total / 10)].map((_, i) => {
             return (
-              <a key={i} style={styleData} onClick={() => handlePage(i + 1)}>
-                {i + 1}
+              <a key={i} style={styleData} onClick={() => handlePage(i)}>
+                {i}
               </a>
             );
           })}
-          <a style={styleData}>&raquo;</a>
+          <a style={styleData} href="">
+            &raquo;
+          </a>
         </div>
       </div>
     </div>
